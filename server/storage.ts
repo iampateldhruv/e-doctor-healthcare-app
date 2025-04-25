@@ -652,7 +652,7 @@ export class MemStorage implements IStorage {
     });
 
     // Create comments for the first blog
-    const commenter1 = this.createUser({
+    const commenter1 = await this.createUser({
       username: "lisa_wang",
       password: "password",
       fullName: "Lisa Wang",
@@ -660,15 +660,17 @@ export class MemStorage implements IStorage {
       role: "patient",
       profileImage: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
     });
+    
+    console.log("Created commenter with ID:", commenter1.id);
 
-    this.createComment({
+    await this.createComment({
       blogId: blog1.id,
       userId: commenter1.id,
       content: "This article was really helpful! I've been trying to improve my heart health after my last check-up showed high cholesterol. The dietary recommendations are practical and easy to follow.",
       likes: 12
     });
 
-    const commenter2 = this.createUser({
+    const commenter2 = await this.createUser({
       username: "michael_roberts",
       password: "password",
       fullName: "Michael Roberts",
@@ -676,16 +678,20 @@ export class MemStorage implements IStorage {
       role: "patient",
       profileImage: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
     });
+    
+    console.log("Created commenter with ID:", commenter2.id);
 
-    const parentComment = this.createComment({
+    const parentComment = await this.createComment({
       blogId: blog1.id,
       userId: commenter2.id,
       content: "I'd love to see a follow-up article about specific exercises that are most beneficial for heart health. Is HIIT better than steady-state cardio? What about strength training?",
       likes: 8
     });
+    
+    console.log("Created parent comment with ID:", parentComment.id);
 
     // Reply to the comment
-    this.createComment({
+    await this.createComment({
       blogId: blog1.id,
       userId: blogAuthor1.id,
       content: "That's a great suggestion, Michael! I'm actually working on a follow-up piece that will cover different types of exercise and their specific benefits for cardiovascular health. Stay tuned!",

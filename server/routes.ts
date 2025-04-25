@@ -4,6 +4,8 @@ import { storage } from "./storage";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import { supabase, testSupabaseConnection } from "./supabase";
+import { identifyDisease, recommendSpecialists, symptoms } from "./symptomChecker";
 
 // Configure multer storage for prescription uploads
 const prescriptionStorage = multer.diskStorage({
@@ -41,6 +43,14 @@ const upload = multer({
 export async function registerRoutes(app: Express): Promise<Server> {
   // API prefix
   const apiPrefix = "/api";
+  
+  // Test Supabase connection
+  try {
+    const connected = await testSupabaseConnection();
+    console.log(`Supabase connection test: ${connected ? 'SUCCESS' : 'FAILED'}`);
+  } catch (error) {
+    console.error('Error testing Supabase connection:', error);
+  }
 
   // Auth-related routes
   app.post(`${apiPrefix}/login`, async (req: Request, res: Response) => {
