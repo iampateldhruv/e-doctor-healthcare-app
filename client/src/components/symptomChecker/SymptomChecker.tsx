@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
+import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -37,6 +38,7 @@ const SymptomChecker = () => {
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showResults, setShowResults] = useState(false);
+  const [, setLocation] = useLocation();
 
   // Fetch the list of available symptoms
   const { 
@@ -304,9 +306,11 @@ const SymptomChecker = () => {
                             ? specialtyDoctors.doctors[0].id 
                             : undefined;
                             
-                          window.location.href = doctorId 
-                            ? `/appointment/new?doctorId=${doctorId}` 
-                            : `/doctors`;
+                          if (doctorId) {
+                            setLocation(`/appointment/new?doctorId=${doctorId}`);
+                          } else {
+                            setLocation('/doctors');
+                          }
                         }}
                       >
                         Consult a {results.recommendedSpecialists[0] || 'Doctor'}
@@ -338,7 +342,7 @@ const SymptomChecker = () => {
             </Button>
             <Button 
               className="bg-white text-primary hover:bg-white/90"
-              onClick={() => window.location.href = '/doctors'}
+              onClick={() => setLocation('/doctors')}
             >
               View All Specialists
             </Button>
