@@ -1,15 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
 import { Appointment } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
-import { Calendar, Clock } from "lucide-react";
+import { Calendar, Clock, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useLocation } from "wouter";
 
 interface UpcomingAppointmentsProps {
   userId: number;
 }
 
 const UpcomingAppointments = ({ userId }: UpcomingAppointmentsProps) => {
+  const [, setLocation] = useLocation();
+  
   const { data: appointments, isLoading } = useQuery<Appointment[]>({
     queryKey: ['/api/appointments', userId, 'patient'],
     queryFn: async () => {
@@ -99,6 +102,15 @@ const UpcomingAppointments = ({ userId }: UpcomingAppointmentsProps) => {
                 </div>
               </div>
               <div className="mt-3 flex justify-end space-x-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="text-xs"
+                  onClick={() => setLocation(`/chat?appointmentId=${appointment.id}`)}
+                >
+                  <MessageCircle className="h-3 w-3 mr-1" />
+                  Chat
+                </Button>
                 <Button variant="outline" size="sm" className="text-xs">Cancel</Button>
                 <Button variant="outline" size="sm" className="text-xs">Reschedule</Button>
               </div>
@@ -112,7 +124,10 @@ const UpcomingAppointments = ({ userId }: UpcomingAppointmentsProps) => {
       </div>
       
       <div className="mt-6">
-        <Button className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-200">
+        <Button 
+          className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-200"
+          onClick={() => setLocation('/appointment/new')}
+        >
           Book New Appointment
         </Button>
       </div>
