@@ -76,6 +76,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       doctors = await storage.listDoctorsWithUsers();
     }
     
+    // Debug log
+    console.log("Doctors count:", doctors.length);
+    console.log("Raw doctors:", await storage.listDoctors());
+    
     return res.status(200).json(doctors);
   });
 
