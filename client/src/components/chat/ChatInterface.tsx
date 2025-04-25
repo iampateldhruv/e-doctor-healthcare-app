@@ -334,8 +334,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             />
             <AvatarFallback>
               {userType === 'doctor' 
-                ? patientName.substring(0, 2).toUpperCase() 
-                : doctorName.substring(0, 2).toUpperCase()
+                ? (patientName ? patientName.substring(0, 2).toUpperCase() : 'PT') 
+                : (doctorName ? doctorName.substring(0, 2).toUpperCase() : 'DR')
               }
             </AvatarFallback>
           </Avatar>
@@ -368,7 +368,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                   <Avatar className="h-6 w-6 mr-2">
                     <AvatarImage src={msg.senderAvatar} alt={msg.senderName} />
                     <AvatarFallback>
-                      {msg.senderName?.substring(0, 2).toUpperCase()}
+                      {msg.senderName ? msg.senderName.substring(0, 2).toUpperCase() : 'UN'}
                     </AvatarFallback>
                   </Avatar>
                   <span className="text-sm font-medium">{msg.senderName}</span>

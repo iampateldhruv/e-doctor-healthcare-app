@@ -69,20 +69,25 @@ const MedicineList = ({ category, type }: MedicineListProps) => {
               </Badge>
             </div>
             <div className="p-4">
-              <Link href={`/medicine/${medicine.id}`}>
-                <a className="block">
-                  <h4 className="text-base font-medium text-gray-900">{medicine.name}</h4>
-                  <p className="text-sm text-gray-600 mt-1">{medicine.dosage} | {medicine.count}</p>
-                  <p className="text-xs text-gray-500 mt-2">{medicine.manufacturer}</p>
-                  
-                  <div className="mt-4 flex justify-between items-center">
-                    <span className="text-lg font-bold text-gray-900">{medicine.price}</span>
-                    <Button className="bg-primary text-white py-1 px-3 rounded-md text-sm hover:bg-blue-600 transition duration-200">
-                      Add to Cart
-                    </Button>
-                  </div>
-                </a>
-              </Link>
+              <div className="block">
+                <Link href={`/medicine/${medicine.id}`}>
+                  <a>
+                    <h4 className="text-base font-medium text-gray-900">{medicine.name}</h4>
+                    <p className="text-sm text-gray-600 mt-1">{medicine.dosage} | {medicine.count}</p>
+                    <p className="text-xs text-gray-500 mt-2">{medicine.manufacturer}</p>
+                  </a>
+                </Link>
+                
+                <div className="mt-4 flex justify-between items-center">
+                  <span className="text-lg font-bold text-gray-900">{medicine.price}</span>
+                  <Button 
+                    className="bg-primary text-white py-1 px-3 rounded-md text-sm hover:bg-blue-600 transition duration-200"
+                    onClick={() => window.location.href = `/cart/add?medicineId=${medicine.id}&qty=1`}
+                  >
+                    Add to Cart
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
         ))}
