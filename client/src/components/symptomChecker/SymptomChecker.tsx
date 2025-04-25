@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/queryClient';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -9,6 +8,18 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, Loader } from 'lucide-react';
 import { Doctor } from '@/lib/types';
+
+interface SymptomResult {
+  possibleDiseases: Array<{
+    name: string;
+    confidence: number;
+  }>;
+  recommendedSpecialists: string[];
+  doctorsBySpecialty: Array<{
+    specialty: string;
+    doctors: Doctor[];
+  }>;
+}
 
 /**
  * Symptom Checker Component
@@ -22,10 +33,10 @@ const SymptomChecker = () => {
 
   // Fetch the list of available symptoms
   const { 
-    data: symptoms, 
+    data: symptoms = [], 
     isLoading: isLoadingSymptoms, 
     error: symptomsError 
-  } = useQuery({
+  } = useQuery<string[]>({
     queryKey: ['/api/symptoms'],
     enabled: true,
   });
@@ -36,16 +47,21 @@ const SymptomChecker = () => {
     data: results, 
     isPending: isCheckingSymptoms,
     error: checkError 
-  } = useMutation({
+  } = useMutation<SymptomResult, Error>({
     mutationFn: async () => {
-      const response = await apiRequest('/api/symptom-checker/recommend-specialists', {
+      const response = await fetch('/api/symptom-checker/recommend-specialists', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ symptoms: selectedSymptoms }),
       });
-      return response;
+      
+      if (!response.ok) {
+        throw new Error('Failed to analyze symptoms');
+      }
+      
+      return response.json();
     },
   });
 
@@ -119,7 +135,7 @@ const SymptomChecker = () => {
                   </div>
                   <ScrollArea className="h-[350px] rounded-md border p-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {symptoms?.map((symptom: string) => (
+                      {symptoms.map((symptom: string) => (
                         <div key={symptom} className="flex items-center space-x-2">
                           <Checkbox 
                             id={`symptom-${symptom}`} 
@@ -165,7 +181,7 @@ const SymptomChecker = () => {
                 <div>
                   <h4 className="text-lg font-medium mb-2">Possible Conditions:</h4>
                   <div className="space-y-3">
-                    {results.possibleDiseases.map((disease: { name: string, confidence: number }) => (
+                    {results.possibleDiseases.map((disease) => (
                       <div key={disease.name} className="p-3 bg-secondary/20 rounded-md">
                         <div className="flex justify-between items-center">
                           <span className="font-medium">{disease.name}</span>
@@ -180,7 +196,7 @@ const SymptomChecker = () => {
 
                 <div>
                   <h4 className="text-lg font-medium mb-2">Recommended Specialists:</h4>
-                  {results.recommendedSpecialists.map((specialist: string) => (
+                  {results.recommendedSpecialists.map((specialist) => (
                     <div key={specialist} className="p-3 bg-primary/10 rounded-md mb-3">
                       <span className="font-medium">{specialist}</span>
                     </div>
@@ -190,11 +206,11 @@ const SymptomChecker = () => {
                 {results.doctorsBySpecialty && results.doctorsBySpecialty.length > 0 && (
                   <div>
                     <h4 className="text-lg font-medium mb-2">Available Doctors:</h4>
-                    {results.doctorsBySpecialty.map((item: { specialty: string, doctors: Doctor[] }) => (
+                    {results.doctorsBySpecialty.map((item) => (
                       <div key={item.specialty} className="mb-4">
                         <h5 className="text-md font-medium mb-2">{item.specialty}:</h5>
                         <div className="space-y-2">
-                          {item.doctors.map((doctor: Doctor & { user: any }) => (
+                          {item.doctors.map((doctor) => (
                             <Card key={doctor.id} className="p-3">
                               <div className="flex items-center">
                                 {doctor.user.profileImage && (
@@ -231,6 +247,17 @@ const SymptomChecker = () => {
                 </Alert>
               </div>
             </div>
+          )}
+
+          {/* Show error if symptoms check fails */}
+          {checkError && (
+            <Alert variant="destructive" className="mt-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>
+                {checkError.message || 'Failed to analyze symptoms. Please try again later.'}
+              </AlertDescription>
+            </Alert>
           )}
         </CardContent>
         <CardFooter className="flex flex-col items-start text-sm text-muted-foreground">

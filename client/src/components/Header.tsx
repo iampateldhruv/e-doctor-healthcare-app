@@ -52,6 +52,9 @@ const Header = () => {
               <NavLink href="/community" current={location === "/community"}>
                 Community
               </NavLink>
+              <NavLink href="/symptom-checker" current={location === "/symptom-checker"}>
+                Symptom Checker
+              </NavLink>
             </nav>
           </div>
           
