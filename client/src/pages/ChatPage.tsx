@@ -12,7 +12,7 @@ const ChatPage: React.FC = () => {
   const { toast } = useToast();
   
   // Get current user
-  const { data: currentUser, isLoading: isLoadingUser, error: userError } = useQuery({
+  const { data: currentUser, isLoading: isLoadingUser, error: userError } = useQuery<any>({
     queryKey: ['/api/users/current'],
   });
   
@@ -21,7 +21,7 @@ const ChatPage: React.FC = () => {
   const appointmentId = parseInt(urlParams.get('appointmentId') || '0', 10);
   
   // Get appointment details
-  const { data: appointment, isLoading: isLoadingAppointment, error: appointmentError } = useQuery({
+  const { data: appointment, isLoading: isLoadingAppointment, error: appointmentError } = useQuery<any>({
     queryKey: ['/api/appointments', appointmentId],
     enabled: !!appointmentId,
   });

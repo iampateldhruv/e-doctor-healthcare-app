@@ -1,3 +1,4 @@
+import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Appointment } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
@@ -13,7 +14,7 @@ interface UpcomingAppointmentsProps {
 const UpcomingAppointments = ({ userId }: UpcomingAppointmentsProps) => {
   const [, setLocation] = useLocation();
   
-  const { data: appointments, isLoading } = useQuery<Appointment[]>({
+  const { data: appointments, isLoading, refetch } = useQuery<Appointment[]>({
     queryKey: ['/api/appointments', userId, 'patient'],
     queryFn: async () => {
       const res = await fetch(`/api/appointments?userId=${userId}&role=patient`);
@@ -22,6 +23,15 @@ const UpcomingAppointments = ({ userId }: UpcomingAppointmentsProps) => {
     },
     enabled: !!userId
   });
+  
+  // Refetch appointments every 10 seconds to get any new ones
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      refetch();
+    }, 10000);
+    
+    return () => clearInterval(interval);
+  }, [refetch]);
 
   if (isLoading) {
     return (

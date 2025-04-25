@@ -110,19 +110,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get(`${apiPrefix}/appointments`, async (req: Request, res: Response) => {
     const { userId, role } = req.query;
     
-    let appointments;
-    if (userId && role) {
-      const id = parseInt(userId as string);
-      if (role === 'patient') {
-        appointments = await storage.listAppointmentsByPatient(id);
-      } else if (role === 'doctor') {
-        appointments = await storage.listAppointmentsByDoctor(id);
+    try {
+      let appointments;
+      
+      if (userId && role) {
+        const id = parseInt(userId as string);
+        
+        if (role === 'patient') {
+          const patientAppointments = await storage.listAppointmentsByPatient(id);
+          appointments = [];
+          
+          // Add doctor details to each appointment
+          for (const appointment of patientAppointments) {
+            const doctor = await storage.getDoctorWithUser(appointment.doctorId);
+            if (doctor) {
+              appointments.push({
+                ...appointment,
+                doctor
+              });
+            } else {
+              appointments.push(appointment);
+            }
+          }
+        } else if (role === 'doctor') {
+          const doctorAppointments = await storage.listAppointmentsByDoctor(id);
+          appointments = [];
+          
+          // Add patient details to each appointment
+          for (const appointment of doctorAppointments) {
+            const patient = await storage.getUser(appointment.patientId);
+            if (patient) {
+              appointments.push({
+                ...appointment,
+                patient
+              });
+            } else {
+              appointments.push(appointment);
+            }
+          }
+        }
+      } else {
+        appointments = await storage.listAppointmentsWithDetails();
       }
-    } else {
-      appointments = await storage.listAppointmentsWithDetails();
+      
+      return res.status(200).json(appointments);
+    } catch (error) {
+      console.error('Error fetching appointments:', error);
+      return res.status(500).json({ message: 'Failed to fetch appointments' });
     }
-    
-    return res.status(200).json(appointments);
   });
 
   app.post(`${apiPrefix}/appointments`, async (req: Request, res: Response) => {

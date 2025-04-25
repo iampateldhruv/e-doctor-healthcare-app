@@ -31,6 +31,11 @@ const Home = () => {
                     {user ? "My Dashboard" : "Sign In"}
                   </Link>
                 </Button>
+                {user && (
+                  <Button size="lg" className="bg-green-600 text-white hover:bg-green-700 ml-4">
+                    <Link href="/dashboard">My Dashboard</Link>
+                  </Button>
+                )}
               </div>
             </div>
             <div className="hidden md:block">
