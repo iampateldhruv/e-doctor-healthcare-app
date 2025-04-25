@@ -4,6 +4,7 @@ import { Doctor } from "@/lib/types";
 import { Star, Building2, ChevronLeft, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useLocation } from "wouter";
 
 interface DoctorsListProps {
   specialization: string;
@@ -13,6 +14,7 @@ interface DoctorsListProps {
 const DoctorsList = ({ specialization, availability }: DoctorsListProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const doctorsPerPage = 6;
+  const [, setLocation] = useLocation();
 
   const { data: doctors, isLoading } = useQuery<Doctor[]>({
     queryKey: ['/api/doctors', specialization],
@@ -111,7 +113,7 @@ const DoctorsList = ({ specialization, availability }: DoctorsListProps) => {
                 </div>
                 <Button 
                   className="bg-primary text-white py-1 px-4 rounded-md hover:bg-blue-600 transition duration-200"
-                  onClick={() => window.location.href = `/appointment/new?doctorId=${doctor.id}`}
+                  onClick={() => setLocation(`/appointment/new?doctorId=${doctor.id}`)}
                 >
                   Book
                 </Button>

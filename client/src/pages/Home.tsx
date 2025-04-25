@@ -26,16 +26,11 @@ const Home = () => {
                 <Button size="lg" className="bg-white text-blue-700 hover:bg-blue-50">
                   <Link href="/doctors">Find a Doctor</Link>
                 </Button>
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-blue-600">
+                <Button size="lg" variant="outline" className="border-white text-white hover:bg-blue-600 font-bold">
                   <Link href={user ? "/dashboard" : "/login"}>
                     {user ? "My Dashboard" : "Sign In"}
                   </Link>
                 </Button>
-                {user && (
-                  <Button size="lg" className="bg-green-600 text-white hover:bg-green-700 ml-4">
-                    <Link href="/dashboard">My Dashboard</Link>
-                  </Button>
-                )}
               </div>
             </div>
             <div className="hidden md:block">

@@ -121,13 +121,14 @@ const AppointmentBookingPage = () => {
       
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['/api/appointments'] });
       toast({
         title: 'Success',
         description: 'Your appointment has been booked successfully',
       });
-      navigate('/dashboard');
+      // Navigate to chat page with the new appointment ID
+      navigate(`/chat?appointmentId=${data.id}`);
     },
     onError: () => {
       toast({
