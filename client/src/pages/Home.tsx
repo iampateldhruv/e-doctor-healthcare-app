@@ -156,9 +156,9 @@ const ServiceCard = ({ icon, title, description, link }: ServiceCardProps) => {
         <h3 className="text-xl font-semibold text-gray-900 mb-3">{title}</h3>
         <p className="text-gray-600 mb-6">{description}</p>
         <Link href={link}>
-          <a className="inline-flex items-center text-primary font-medium hover:text-blue-700">
+          <span className="inline-flex items-center text-primary font-medium hover:text-blue-700 cursor-pointer">
             Learn More <ArrowRight className="ml-2 h-4 w-4" />
-          </a>
+          </span>
         </Link>
       </div>
     </div>
