@@ -10,6 +10,8 @@ interface RecentConsultationsProps {
 }
 
 const RecentConsultations = ({ userId }: RecentConsultationsProps) => {
+  const [, setLocation] = useLocation();
+  
   const { data: consultations, isLoading } = useQuery<Appointment[]>({
     queryKey: ['/api/appointments', userId, 'completed'],
     queryFn: async () => {
@@ -104,15 +106,33 @@ const RecentConsultations = ({ userId }: RecentConsultationsProps) => {
               </div>
             </div>
             <div className="mt-3 flex justify-end space-x-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="text-xs"
+                onClick={() => setLocation(`/chat?appointmentId=${consultation.id}`)}
+              >
+                <MessageCircle className="h-3 w-3 mr-1" />
+                Chat
+              </Button>
               <Button variant="outline" size="sm" className="text-xs">View Summary</Button>
-              <Button className="text-xs bg-primary text-white px-3 py-1 rounded">Book Follow-up</Button>
+              <Button 
+                className="text-xs bg-primary text-white px-3 py-1 rounded"
+                onClick={() => setLocation('/appointment/new')}
+              >
+                Book Follow-up
+              </Button>
             </div>
           </div>
         ))}
       </div>
       
       <div className="mt-6">
-        <Button variant="outline" className="w-full bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-50 transition duration-200">
+        <Button 
+          variant="outline" 
+          onClick={() => setLocation('/dashboard/history')}
+          className="w-full bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-50 transition duration-200"
+        >
           View All History
         </Button>
       </div>

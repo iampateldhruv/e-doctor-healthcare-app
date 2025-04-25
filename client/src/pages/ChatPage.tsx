@@ -5,7 +5,7 @@ import { ArrowLeft } from 'lucide-react';
 import ChatInterface from '@/components/chat/ChatInterface';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Spinner } from '@/components/ui/spinner';
+import { Spinner } from '../components/ui/spinner';
 
 const ChatPage: React.FC = () => {
   const [, setLocation] = useLocation();
