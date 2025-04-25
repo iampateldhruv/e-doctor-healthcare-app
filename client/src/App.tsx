@@ -12,6 +12,7 @@ import Pharmacy from "@/pages/Pharmacy";
 import MedicineDetailPage from "@/pages/MedicineDetailPage";
 import Community from "@/pages/Community";
 import BlogDetailPage from "@/pages/BlogDetailPage";
+import SymptomCheckerPage from "@/pages/SymptomCheckerPage";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -24,6 +25,7 @@ function Router() {
       <Route path="/medicine/:id" component={MedicineDetailPage} />
       <Route path="/community" component={Community} />
       <Route path="/blog/:id" component={BlogDetailPage} />
+      <Route path="/symptom-checker" component={SymptomCheckerPage} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -1,4 +1,4 @@
-import { KMeans } from 'ml-kmeans';
+import { kmeans } from 'ml-kmeans';
 import { Matrix } from 'ml-matrix';
 import { euclidean } from 'ml-distance-euclidean';
 

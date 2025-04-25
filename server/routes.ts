@@ -308,6 +308,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     return res.status(200).json(comment);
   });
+  
+  // =============== SYMPTOM CHECKER ROUTES ===============
+  
+  // Get all available symptoms
+  app.get(`${apiPrefix}/symptoms`, async (req: Request, res: Response) => {
+    return res.status(200).json(symptoms);
+  });
+  
+  // Check symptoms and identify possible diseases
+  app.post(`${apiPrefix}/symptom-checker`, async (req: Request, res: Response) => {
+    const { symptoms } = req.body;
+    
+    if (!symptoms || !Array.isArray(symptoms) || symptoms.length === 0) {
+      return res.status(400).json({ message: "Symptoms array is required" });
+    }
+    
+    const result = identifyDisease(symptoms);
+    return res.status(200).json(result);
+  });
+  
+  // Recommend specialists based on symptoms
+  app.post(`${apiPrefix}/symptom-checker/recommend-specialists`, async (req: Request, res: Response) => {
+    const { symptoms } = req.body;
+    
+    if (!symptoms || !Array.isArray(symptoms) || symptoms.length === 0) {
+      return res.status(400).json({ message: "Symptoms array is required" });
+    }
+    
+    const recommendation = recommendSpecialists(symptoms);
+    
+    // Get doctors by the recommended specialties
+    const doctorsBySpecialty = [];
+    
+    for (const specialty of recommendation.recommendedSpecialists) {
+      const doctors = await storage.listDoctorsBySpecialization(specialty.toLowerCase());
+      if (doctors.length > 0) {
+        doctorsBySpecialty.push({
+          specialty,
+          doctors
+        });
+      }
+    }
+    
+    return res.status(200).json({
+      ...recommendation,
+      doctorsBySpecialty
+    });
+  });
 
   const httpServer = createServer(app);
   return httpServer;
