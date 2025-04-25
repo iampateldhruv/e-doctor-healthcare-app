@@ -15,6 +15,8 @@ import BlogDetailPage from "@/pages/BlogDetailPage";
 import SymptomCheckerPage from "@/pages/SymptomCheckerPage";
 import AppointmentBookingPage from "@/pages/AppointmentBookingPage";
 import ChatPage from "@/pages/ChatPage";
+import Cart from "@/pages/Cart";
+import OrderConfirmation from "@/pages/OrderConfirmation";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -30,6 +32,9 @@ function Router() {
       <Route path="/symptom-checker" component={SymptomCheckerPage} />
       <Route path="/appointment/new" component={AppointmentBookingPage} />
       <Route path="/chat" component={ChatPage} />
+      <Route path="/cart" component={Cart} />
+      <Route path="/cart/add" component={Cart} />
+      <Route path="/order-confirmation" component={OrderConfirmation} />
       <Route component={NotFound} />
     </Switch>
   );

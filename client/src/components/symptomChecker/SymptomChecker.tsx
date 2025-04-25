@@ -239,7 +239,7 @@ const SymptomChecker = () => {
                                     <Button 
                                       size="sm" 
                                       className="w-full"
-                                      onClick={() => window.location.href = `/doctors/${doctor.id}`}
+                                      onClick={() => window.location.href = `/doctors`}
                                     >
                                       View Profile
                                     </Button>
