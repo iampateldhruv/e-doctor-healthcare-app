@@ -6,7 +6,8 @@ import {
   medicines, type Medicine, type InsertMedicine,
   prescriptions, type Prescription, type InsertPrescription,
   blogs, type Blog, type InsertBlog,
-  comments, type Comment, type InsertComment
+  comments, type Comment, type InsertComment,
+  chatMessages, type ChatMessage, type InsertChatMessage
 } from "@shared/schema";
 
 export interface IStorage {
@@ -64,6 +65,12 @@ export interface IStorage {
   listCommentsByBlog(blogId: number): Promise<Comment[]>;
   listCommentsByBlogWithUsers(blogId: number): Promise<(Comment & { user: User })[]>;
   incrementCommentLikes(id: number): Promise<Comment | undefined>;
+  
+  // Chat methods
+  getChatMessage(id: number): Promise<ChatMessage | undefined>;
+  createChatMessage(message: InsertChatMessage): Promise<ChatMessage>;
+  getChatHistory(appointmentId: number): Promise<ChatMessage[]>;
+  listChatMessagesByAppointment(appointmentId: number): Promise<ChatMessage[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -75,6 +82,7 @@ export class MemStorage implements IStorage {
   private prescriptions: Map<number, Prescription>;
   private blogs: Map<number, Blog>;
   private comments: Map<number, Comment>;
+  private chatMessages: Map<number, ChatMessage>;
 
   private currentUserId: number;
   private currentDoctorId: number;
@@ -84,6 +92,7 @@ export class MemStorage implements IStorage {
   private currentPrescriptionId: number;
   private currentBlogId: number;
   private currentCommentId: number;
+  private currentChatMessageId: number;
 
   constructor() {
     this.users = new Map();
@@ -94,6 +103,7 @@ export class MemStorage implements IStorage {
     this.prescriptions = new Map();
     this.blogs = new Map();
     this.comments = new Map();
+    this.chatMessages = new Map();
 
     this.currentUserId = 1;
     this.currentDoctorId = 1;
@@ -103,6 +113,7 @@ export class MemStorage implements IStorage {
     this.currentPrescriptionId = 1;
     this.currentBlogId = 1;
     this.currentCommentId = 1;
+    this.currentChatMessageId = 1;
 
     console.log("Initializing storage...");
     this.initializeData();
@@ -980,6 +991,34 @@ export class MemStorage implements IStorage {
     const updatedComment: Comment = { ...comment, likes: comment.likes + 1 };
     this.comments.set(id, updatedComment);
     return updatedComment;
+  }
+  
+  // Chat Message methods
+  async getChatMessage(id: number): Promise<ChatMessage | undefined> {
+    return this.chatMessages.get(id);
+  }
+  
+  async createChatMessage(insertMessage: InsertChatMessage): Promise<ChatMessage> {
+    const id = this.currentChatMessageId++;
+    
+    const message: ChatMessage = {
+      ...insertMessage,
+      id,
+      createdAt: new Date()
+    };
+    
+    this.chatMessages.set(id, message);
+    return message;
+  }
+  
+  async getChatHistory(appointmentId: number): Promise<ChatMessage[]> {
+    return this.listChatMessagesByAppointment(appointmentId);
+  }
+  
+  async listChatMessagesByAppointment(appointmentId: number): Promise<ChatMessage[]> {
+    return Array.from(this.chatMessages.values())
+      .filter(message => message.appointmentId === appointmentId)
+      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
   }
 }
 
