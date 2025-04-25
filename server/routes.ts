@@ -359,6 +359,69 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // =============== CHAT ROUTES ===============
+  
+  // Configure multer storage for chat file uploads
+  const chatUploadsStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      const uploadDir = path.join(process.cwd(), "uploads", "chat");
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+      cb(null, uploadDir);
+    },
+    filename: function (req, file, cb) {
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      cb(null, uniqueSuffix + path.extname(file.originalname));
+    },
+  });
+  
+  const chatUpload = multer({
+    storage: chatUploadsStorage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+    fileFilter: function (req, file, cb) {
+      const allowedImageTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+      const allowedDocTypes = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "text/plain"];
+      
+      if ([...allowedImageTypes, ...allowedDocTypes].includes(file.mimetype)) {
+        cb(null, true);
+      } else {
+        cb(new Error("Invalid file type. Only images, PDFs, DOC, DOCX, and TXT are allowed.") as any);
+      }
+    },
+  });
+  
+  // Chat file upload endpoint
+  app.post(`${apiPrefix}/chat/upload`, chatUpload.single('file'), async (req: Request, res: Response) => {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+    
+    const { appointmentId } = req.body;
+    
+    if (!appointmentId) {
+      return res.status(400).json({ message: "Appointment ID is required" });
+    }
+    
+    try {
+      // In a production environment, you'd probably upload to a cloud storage service
+      // For this example, we'll just use the local path
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      const relativePath = `/uploads/chat/${path.basename(req.file.path)}`;
+      const fileUrl = `${baseUrl}${relativePath}`;
+      
+      return res.status(201).json({
+        url: fileUrl,
+        filename: req.file.originalname,
+        size: req.file.size,
+        mimetype: req.file.mimetype
+      });
+    } catch (error) {
+      console.error("File upload error:", error);
+      return res.status(500).json({ message: "Failed to upload file" });
+    }
+  });
+
   const httpServer = createServer(app);
   
   // =============== CHAT VIA WEBSOCKETS ===============
