@@ -63,7 +63,7 @@ const FindDoctors = () => {
                 <SelectValue placeholder="All Specializations" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Specializations</SelectItem>
+                <SelectItem value="all">All Specializations</SelectItem>
                 <SelectItem value="cardiology">Cardiology</SelectItem>
                 <SelectItem value="dermatology">Dermatology</SelectItem>
                 <SelectItem value="neurology">Neurology</SelectItem>
@@ -85,7 +85,7 @@ const FindDoctors = () => {
                 <SelectValue placeholder="Any Time" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Any Time</SelectItem>
+                <SelectItem value="any">Any Time</SelectItem>
                 <SelectItem value="today">Today</SelectItem>
                 <SelectItem value="tomorrow">Tomorrow</SelectItem>
                 <SelectItem value="this_week">This Week</SelectItem>

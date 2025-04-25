@@ -17,7 +17,7 @@ const DoctorsList = ({ specialization, availability }: DoctorsListProps) => {
   const { data: doctors, isLoading } = useQuery<Doctor[]>({
     queryKey: ['/api/doctors', specialization],
     queryFn: async () => {
-      const url = specialization 
+      const url = specialization && specialization !== 'all'
         ? `/api/doctors?specialization=${specialization}` 
         : '/api/doctors';
       const res = await fetch(url);
@@ -51,7 +51,7 @@ const DoctorsList = ({ specialization, availability }: DoctorsListProps) => {
 
   // Filter doctors based on availability if selected
   const filteredDoctors = doctors?.filter(doctor => {
-    if (!availability) return true;
+    if (!availability || availability === 'any') return true;
     return doctor.availability === availability;
   });
 
