@@ -109,7 +109,10 @@ const DoctorsList = ({ specialization, availability }: DoctorsListProps) => {
                 <div className="text-sm text-gray-900 font-medium">
                   Next Available: <span className="text-green-600">{doctor.nextAvailable}</span>
                 </div>
-                <Button className="bg-primary text-white py-1 px-4 rounded-md hover:bg-blue-600 transition duration-200">
+                <Button 
+                  className="bg-primary text-white py-1 px-4 rounded-md hover:bg-blue-600 transition duration-200"
+                  onClick={() => window.location.href = `/appointment/new?doctorId=${doctor.id}`}
+                >
                   Book
                 </Button>
               </div>

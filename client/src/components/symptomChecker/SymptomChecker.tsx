@@ -210,50 +210,56 @@ const SymptomChecker = () => {
                       <div key={item.specialty} className="mb-4">
                         <h5 className="text-md font-medium mb-2">{item.specialty}:</h5>
                         <div className="space-y-2">
-                          {item.doctors.map((doctor) => (
-                            <Card key={doctor.id} className="p-4">
-                              <div className="flex items-start justify-between">
-                                <div className="flex">
-                                  {doctor.user.profileImage && (
-                                    <img 
-                                      src={doctor.user.profileImage} 
-                                      alt={doctor.user.fullName} 
-                                      className="w-12 h-12 rounded-full mr-3"
-                                    />
-                                  )}
-                                  <div>
-                                    <div className="font-medium text-lg">{doctor.user.fullName}</div>
-                                    <div className="text-sm text-muted-foreground mb-1">
-                                      {doctor.hospital} • {doctor.experience}
-                                    </div>
-                                    <div className="flex items-center text-sm">
-                                      <span className="text-amber-500 mr-1">★</span> 
-                                      <span className="font-medium">{doctor.rating}</span>
-                                      <span className="mx-1 text-muted-foreground">({doctor.reviewCount} reviews)</span>
-                                      <span className="ml-2 text-green-600 font-medium">Next: {doctor.nextAvailable}</span>
+                          {item.doctors.length > 0 ? (
+                            item.doctors.map((doctor) => (
+                              <Card key={doctor.id} className="p-4">
+                                <div className="flex items-start justify-between">
+                                  <div className="flex">
+                                    {doctor.user && doctor.user.profileImage && (
+                                      <img 
+                                        src={doctor.user.profileImage} 
+                                        alt={doctor.user?.fullName || 'Doctor'} 
+                                        className="w-12 h-12 rounded-full mr-3"
+                                      />
+                                    )}
+                                    <div>
+                                      <div className="font-medium text-lg">{doctor.user?.fullName || 'Doctor'}</div>
+                                      <div className="text-sm text-muted-foreground mb-1">
+                                        {doctor.hospital} • {doctor.experience || 'Experienced'}
+                                      </div>
+                                      <div className="flex items-center text-sm">
+                                        <span className="text-amber-500 mr-1">★</span> 
+                                        <span className="font-medium">{doctor.rating || '4.5'}</span>
+                                        <span className="mx-1 text-muted-foreground">({doctor.reviewCount || '0'} reviews)</span>
+                                        <span className="ml-2 text-green-600 font-medium">Next: {doctor.nextAvailable || 'Soon'}</span>
+                                      </div>
                                     </div>
                                   </div>
+                                  <div className="flex flex-col space-y-2">
+                                    <Button 
+                                      size="sm" 
+                                      className="w-full"
+                                      onClick={() => window.location.href = `/doctors/${doctor.id}`}
+                                    >
+                                      View Profile
+                                    </Button>
+                                    <Button 
+                                      size="sm" 
+                                      variant="outline" 
+                                      className="w-full"
+                                      onClick={() => window.location.href = `/appointment/new?doctorId=${doctor.id}`}
+                                    >
+                                      Book Appointment
+                                    </Button>
+                                  </div>
                                 </div>
-                                <div className="flex flex-col space-y-2">
-                                  <Button 
-                                    size="sm" 
-                                    className="w-full"
-                                    onClick={() => window.location.href = `/doctors/${doctor.id}`}
-                                  >
-                                    View Profile
-                                  </Button>
-                                  <Button 
-                                    size="sm" 
-                                    variant="outline" 
-                                    className="w-full"
-                                    onClick={() => window.location.href = `/appointment/new?doctorId=${doctor.id}`}
-                                  >
-                                    Book Appointment
-                                  </Button>
-                                </div>
-                              </div>
-                            </Card>
-                          ))}
+                              </Card>
+                            ))
+                          ) : (
+                            <div className="text-center p-4 bg-muted rounded-md">
+                              <p>No doctors available for this specialty right now.</p>
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}
