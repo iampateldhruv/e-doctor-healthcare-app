@@ -211,20 +211,45 @@ const SymptomChecker = () => {
                         <h5 className="text-md font-medium mb-2">{item.specialty}:</h5>
                         <div className="space-y-2">
                           {item.doctors.map((doctor) => (
-                            <Card key={doctor.id} className="p-3">
-                              <div className="flex items-center">
-                                {doctor.user.profileImage && (
-                                  <img 
-                                    src={doctor.user.profileImage} 
-                                    alt={doctor.user.fullName} 
-                                    className="w-10 h-10 rounded-full mr-3"
-                                  />
-                                )}
-                                <div>
-                                  <div className="font-medium">{doctor.user.fullName}</div>
-                                  <div className="text-sm text-muted-foreground">
-                                    {doctor.hospital} • {doctor.experience}
+                            <Card key={doctor.id} className="p-4">
+                              <div className="flex items-start justify-between">
+                                <div className="flex">
+                                  {doctor.user.profileImage && (
+                                    <img 
+                                      src={doctor.user.profileImage} 
+                                      alt={doctor.user.fullName} 
+                                      className="w-12 h-12 rounded-full mr-3"
+                                    />
+                                  )}
+                                  <div>
+                                    <div className="font-medium text-lg">{doctor.user.fullName}</div>
+                                    <div className="text-sm text-muted-foreground mb-1">
+                                      {doctor.hospital} • {doctor.experience}
+                                    </div>
+                                    <div className="flex items-center text-sm">
+                                      <span className="text-amber-500 mr-1">★</span> 
+                                      <span className="font-medium">{doctor.rating}</span>
+                                      <span className="mx-1 text-muted-foreground">({doctor.reviewCount} reviews)</span>
+                                      <span className="ml-2 text-green-600 font-medium">Next: {doctor.nextAvailable}</span>
+                                    </div>
                                   </div>
+                                </div>
+                                <div className="flex flex-col space-y-2">
+                                  <Button 
+                                    size="sm" 
+                                    className="w-full"
+                                    onClick={() => window.location.href = `/doctors/${doctor.id}`}
+                                  >
+                                    View Profile
+                                  </Button>
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline" 
+                                    className="w-full"
+                                    onClick={() => window.location.href = `/appointment/new?doctorId=${doctor.id}`}
+                                  >
+                                    Book Appointment
+                                  </Button>
                                 </div>
                               </div>
                             </Card>

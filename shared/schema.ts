@@ -169,3 +169,23 @@ export const insertCommentSchema = createInsertSchema(comments).omit({
 
 export type InsertComment = z.infer<typeof insertCommentSchema>;
 export type Comment = typeof comments.$inferSelect;
+
+// Chat messages for doctor-patient communication
+export const chatMessages = pgTable("chat_messages", {
+  id: serial("id").primaryKey(),
+  appointmentId: integer("appointment_id").notNull().references(() => appointments.id),
+  senderId: integer("sender_id").notNull(), // User ID of the sender
+  senderType: text("sender_type").notNull(), // 'doctor' or 'patient'
+  content: text("content").notNull(),
+  attachmentUrl: text("attachment_url"),
+  attachmentType: text("attachment_type"), // 'image', 'document', etc.
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
+export type ChatMessage = typeof chatMessages.$inferSelect;

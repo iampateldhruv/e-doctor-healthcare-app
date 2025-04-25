@@ -6,6 +6,8 @@ import path from "path";
 import fs from "fs";
 import { supabase, testSupabaseConnection } from "./supabase";
 import { identifyDisease, recommendSpecialists, symptoms } from "./symptomChecker";
+import { WebSocketServer } from 'ws';
+import { v4 as uuidv4 } from 'uuid';
 
 // Configure multer storage for prescription uploads
 const prescriptionStorage = multer.diskStorage({
@@ -358,5 +360,196 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   const httpServer = createServer(app);
+  
+  // =============== CHAT VIA WEBSOCKETS ===============
+  
+  // Set up the WebSocket server
+  const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
+  
+  // Store active connections
+  const clients = new Map();
+  
+  // Handle WebSocket connections
+  wss.on('connection', (ws) => {
+    // Generate a unique client ID
+    const clientId = uuidv4();
+    
+    // Store the connection
+    clients.set(clientId, { 
+      ws, 
+      userId: null,
+      doctorId: null,
+      appointmentId: null,
+      userType: null
+    });
+    
+    console.log(`WebSocket client connected: ${clientId}`);
+    
+    // Handle authentication and messages
+    ws.on('message', async (message) => {
+      try {
+        const data = JSON.parse(message.toString());
+        
+        // Handle authentication
+        if (data.type === 'auth') {
+          const client = clients.get(clientId);
+          client.userId = data.userId;
+          client.userType = data.userType;
+          
+          if (data.userType === 'doctor') {
+            client.doctorId = data.doctorId;
+          }
+          
+          clients.set(clientId, client);
+          
+          // Send confirmation message
+          ws.send(JSON.stringify({
+            type: 'auth_success',
+            clientId,
+            userId: data.userId,
+            userType: data.userType
+          }));
+          
+          console.log(`WebSocket client authenticated: ${clientId}, User: ${data.userId}, Type: ${data.userType}`);
+        }
+        
+        // Handle joining a chat room for an appointment
+        if (data.type === 'join_appointment_chat') {
+          const client = clients.get(clientId);
+          client.appointmentId = data.appointmentId;
+          clients.set(clientId, client);
+          
+          // Send confirmation
+          ws.send(JSON.stringify({
+            type: 'join_success',
+            appointmentId: data.appointmentId
+          }));
+          
+          // Load chat history
+          const chatHistory = await storage.getChatHistory(data.appointmentId);
+          if (chatHistory && chatHistory.length > 0) {
+            ws.send(JSON.stringify({
+              type: 'chat_history',
+              messages: chatHistory
+            }));
+          }
+          
+          console.log(`WebSocket client joined appointment chat: ${clientId}, Appointment: ${data.appointmentId}`);
+        }
+        
+        // Handle chat messages
+        if (data.type === 'chat_message') {
+          const client = clients.get(clientId);
+          
+          if (!client.appointmentId) {
+            ws.send(JSON.stringify({
+              type: 'error',
+              message: 'You must join an appointment chat first'
+            }));
+            return;
+          }
+          
+          // Save the message to the database
+          const message = await storage.createChatMessage({
+            appointmentId: client.appointmentId,
+            senderId: client.userId,
+            senderType: client.userType,
+            content: data.content,
+            attachmentUrl: data.attachmentUrl || null,
+            attachmentType: data.attachmentType || null
+          });
+          
+          // Get the appointment details to find the other participant
+          const appointment = await storage.getAppointment(client.appointmentId);
+          
+          if (!appointment) {
+            ws.send(JSON.stringify({
+              type: 'error',
+              message: 'Appointment not found'
+            }));
+            return;
+          }
+          
+          // Prepare the message to broadcast
+          const chatMessage = {
+            type: 'chat_message',
+            message: {
+              id: message.id,
+              appointmentId: message.appointmentId,
+              senderId: message.senderId,
+              senderType: message.senderType,
+              content: message.content,
+              attachmentUrl: message.attachmentUrl,
+              attachmentType: message.attachmentType,
+              timestamp: message.createdAt
+            }
+          };
+          
+          // Broadcast to all clients in this appointment chat room
+          clients.forEach((c, id) => {
+            if (c.appointmentId === client.appointmentId && c.ws.readyState === 1) {
+              c.ws.send(JSON.stringify(chatMessage));
+            }
+          });
+          
+          // Create notification for the recipient
+          const recipientId = client.userType === 'patient' ? appointment.doctorId : appointment.patientId;
+          const recipient = client.userType === 'patient' 
+            ? await storage.getDoctor(appointment.doctorId)
+            : await storage.getUser(appointment.patientId);
+          
+          if (recipient) {
+            await storage.createNotification({
+              userId: client.userType === 'patient' ? 
+                (recipient as any).userId : // If doctor, need user ID associated with doctor
+                recipientId, // If patient, use patient ID directly
+              type: 'chat',
+              title: 'New Chat Message',
+              message: `You have a new message from ${client.userType === 'patient' ? 'patient' : 'doctor'}`,
+              isRead: false,
+              metadata: { appointmentId: client.appointmentId, messageId: message.id }
+            });
+          }
+        }
+        
+        // Handle typing status
+        if (data.type === 'typing_status') {
+          const client = clients.get(clientId);
+          
+          if (!client.appointmentId) {
+            return;
+          }
+          
+          // Broadcast typing status to other clients in the same appointment chat
+          clients.forEach((c, id) => {
+            if (id !== clientId && 
+                c.appointmentId === client.appointmentId && 
+                c.ws.readyState === 1) {
+              c.ws.send(JSON.stringify({
+                type: 'typing_status',
+                userId: client.userId,
+                userType: client.userType,
+                isTyping: data.isTyping
+              }));
+            }
+          });
+        }
+        
+      } catch (error) {
+        console.error('WebSocket message error:', error);
+        ws.send(JSON.stringify({
+          type: 'error',
+          message: 'Invalid message format'
+        }));
+      }
+    });
+    
+    // Handle disconnections
+    ws.on('close', () => {
+      clients.delete(clientId);
+      console.log(`WebSocket client disconnected: ${clientId}`);
+    });
+  });
+  
   return httpServer;
 }
