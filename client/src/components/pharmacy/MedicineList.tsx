@@ -82,7 +82,11 @@ const MedicineList = ({ category, type }: MedicineListProps) => {
                   <span className="text-lg font-bold text-gray-900">{medicine.price}</span>
                   <Button 
                     className="bg-primary text-white py-1 px-3 rounded-md text-sm hover:bg-blue-600 transition duration-200"
-                    onClick={() => window.location.href = `/cart/add?medicineId=${medicine.id}&qty=1`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      window.location.href = `/cart/add?medicineId=${medicine.id}&qty=1`;
+                    }}
                   >
                     Add to Cart
                   </Button>
