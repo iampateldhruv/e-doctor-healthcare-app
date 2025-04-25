@@ -104,13 +104,16 @@ export class MemStorage implements IStorage {
     this.currentBlogId = 1;
     this.currentCommentId = 1;
 
+    console.log("Initializing storage...");
     this.initializeData();
+    console.log("Storage initialized.");
+    console.log("Doctors after initialization:", Array.from(this.doctors.values()).length);
   }
 
   // Initialize with demo data
-  private initializeData() {
-    // Create users
-    const adminUser = this.createUser({
+  private async initializeData() {
+    // Create users - await these to ensure the ids are available
+    const adminUser = await this.createUser({
       username: "admin",
       password: "password",
       fullName: "Admin",
@@ -119,7 +122,7 @@ export class MemStorage implements IStorage {
       profileImage: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
     });
 
-    const patientUser = this.createUser({
+    const patientUser = await this.createUser({
       username: "john",
       password: "password",
       fullName: "John Doe",
@@ -128,8 +131,8 @@ export class MemStorage implements IStorage {
       profileImage: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
     });
 
-    // Create doctors
-    const drSarah = this.createUser({
+    // Create doctors - await user creation and log the actual user ID
+    const drSarah = await this.createUser({
       username: "drsarah",
       password: "password",
       fullName: "Dr. Sarah Johnson",
@@ -137,8 +140,10 @@ export class MemStorage implements IStorage {
       role: "doctor",
       profileImage: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
     });
+    
+    console.log("Created doctor user with ID:", drSarah.id);
 
-    this.createDoctor({
+    await this.createDoctor({
       userId: drSarah.id,
       specialization: "cardiology",
       hospital: "City Medical Center",
@@ -150,7 +155,7 @@ export class MemStorage implements IStorage {
       availability: "today"
     });
 
-    const drRobert = this.createUser({
+    const drRobert = await this.createUser({
       username: "drrobert",
       password: "password",
       fullName: "Dr. Robert Chen",
@@ -158,8 +163,10 @@ export class MemStorage implements IStorage {
       role: "doctor",
       profileImage: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
     });
+    
+    console.log("Created doctor user with ID:", drRobert.id);
 
-    this.createDoctor({
+    await this.createDoctor({
       userId: drRobert.id,
       specialization: "dermatology",
       hospital: "Westside Skin Clinic",
@@ -171,7 +178,7 @@ export class MemStorage implements IStorage {
       availability: "tomorrow"
     });
 
-    const drEmily = this.createUser({
+    const drEmily = await this.createUser({
       username: "dremily",
       password: "password",
       fullName: "Dr. Emily Rodriguez",
@@ -179,8 +186,10 @@ export class MemStorage implements IStorage {
       role: "doctor",
       profileImage: "https://images.unsplash.com/photo-1594824476967-48c8b964273f?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
     });
+    
+    console.log("Created doctor user with ID:", drEmily.id);
 
-    this.createDoctor({
+    await this.createDoctor({
       userId: drEmily.id,
       specialization: "neurology",
       hospital: "Neuro Health Institute",
@@ -192,7 +201,7 @@ export class MemStorage implements IStorage {
       availability: "this_week"
     });
 
-    const drMichael = this.createUser({
+    const drMichael = await this.createUser({
       username: "drmichael",
       password: "password",
       fullName: "Dr. Michael Thompson",
@@ -200,8 +209,10 @@ export class MemStorage implements IStorage {
       role: "doctor",
       profileImage: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
     });
+    
+    console.log("Created doctor user with ID:", drMichael.id);
 
-    this.createDoctor({
+    await this.createDoctor({
       userId: drMichael.id,
       specialization: "pediatrics",
       hospital: "Children's Wellness Center",
@@ -213,7 +224,7 @@ export class MemStorage implements IStorage {
       availability: "tomorrow"
     });
 
-    const drJessica = this.createUser({
+    const drJessica = await this.createUser({
       username: "drjessica",
       password: "password",
       fullName: "Dr. Jessica Lee",
@@ -221,8 +232,10 @@ export class MemStorage implements IStorage {
       role: "doctor",
       profileImage: "https://images.unsplash.com/photo-1551601651-bc60f254d532?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
     });
+    
+    console.log("Created doctor user with ID:", drJessica.id);
 
-    this.createDoctor({
+    await this.createDoctor({
       userId: drJessica.id,
       specialization: "psychiatry",
       hospital: "Mental Wellness Center",
@@ -234,7 +247,7 @@ export class MemStorage implements IStorage {
       availability: "today"
     });
 
-    const drDavid = this.createUser({
+    const drDavid = await this.createUser({
       username: "drdavid",
       password: "password",
       fullName: "Dr. David Williams",
@@ -242,8 +255,10 @@ export class MemStorage implements IStorage {
       role: "doctor",
       profileImage: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
     });
+    
+    console.log("Created doctor user with ID:", drDavid.id);
 
-    this.createDoctor({
+    await this.createDoctor({
       userId: drDavid.id,
       specialization: "orthopedics",
       hospital: "Joint & Spine Center",
@@ -256,7 +271,7 @@ export class MemStorage implements IStorage {
     });
 
     // Create appointments
-    this.createAppointment({
+    await this.createAppointment({
       patientId: patientUser.id,
       doctorId: 1, // Dr. Sarah
       date: "May 15, 2023",
@@ -264,7 +279,7 @@ export class MemStorage implements IStorage {
       status: "confirmed"
     });
 
-    this.createAppointment({
+    await this.createAppointment({
       patientId: patientUser.id,
       doctorId: 2, // Dr. Robert
       date: "May 20, 2023",
@@ -273,7 +288,7 @@ export class MemStorage implements IStorage {
     });
 
     // Create notifications
-    this.createNotification({
+    await this.createNotification({
       userId: patientUser.id,
       type: "appointment",
       title: "Upcoming Appointment",
@@ -282,7 +297,7 @@ export class MemStorage implements IStorage {
       metadata: { appointmentId: 1, doctorId: 1 }
     });
 
-    this.createNotification({
+    await this.createNotification({
       userId: patientUser.id,
       type: "prescription",
       title: "Prescription Ready",
@@ -291,7 +306,7 @@ export class MemStorage implements IStorage {
       metadata: { medicineId: 1 }
     });
 
-    this.createNotification({
+    await this.createNotification({
       userId: patientUser.id,
       type: "consultation",
       title: "Consultation Follow-up",
@@ -374,7 +389,7 @@ export class MemStorage implements IStorage {
     });
 
     // Create blogs
-    const blogAuthor1 = this.createUser({
+    const blogAuthor1 = await this.createUser({
       username: "drhealthexpert",
       password: "password",
       fullName: "Dr. Sarah Johnson",
@@ -382,8 +397,10 @@ export class MemStorage implements IStorage {
       role: "doctor",
       profileImage: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
     });
+    
+    console.log("Created blog author with ID:", blogAuthor1.id);
 
-    const blog1 = this.createBlog({
+    const blog1 = await this.createBlog({
       title: "Understanding Heart Health: 10 Tips for a Healthy Heart",
       content: `<p>Heart disease remains one of the leading causes of death worldwide. The good news is that many risk factors for heart disease are controllable through lifestyle changes and preventive care. In this article, we'll explore 10 practical tips to maintain and improve your heart health.</p>
             
@@ -436,7 +453,7 @@ export class MemStorage implements IStorage {
       views: 1200
     });
 
-    const blogAuthor2 = this.createUser({
+    const blogAuthor2 = await this.createUser({
       username: "drmentalhealth",
       password: "password",
       fullName: "Dr. Emily Rodriguez",
@@ -444,8 +461,10 @@ export class MemStorage implements IStorage {
       role: "doctor",
       profileImage: "https://images.unsplash.com/photo-1594824476967-48c8b964273f?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
     });
+    
+    console.log("Created blog author with ID:", blogAuthor2.id);
 
-    const blog2 = this.createBlog({
+    const blog2 = await this.createBlog({
       title: "Mental Wellness in the Digital Age: Finding Balance",
       content: `<p>The constant connectivity of modern life can take a toll on mental health. With smartphones, social media, and 24/7 accessibility, many people struggle to find a healthy balance. This article explores strategies to maintain psychological wellbeing while navigating our increasingly digital world.</p>
       
@@ -534,7 +553,7 @@ export class MemStorage implements IStorage {
       views: 956
     });
 
-    const blogAuthor3 = this.createUser({
+    const blogAuthor3 = await this.createUser({
       username: "drnutrition",
       password: "password",
       fullName: "Dr. Robert Chen",
@@ -542,8 +561,10 @@ export class MemStorage implements IStorage {
       role: "doctor",
       profileImage: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
     });
+    
+    console.log("Created blog author with ID:", blogAuthor3.id);
 
-    const blog3 = this.createBlog({
+    const blog3 = await this.createBlog({
       title: "Nutrition Myths Debunked: Science-Based Eating Habits",
       content: `<p>With so much conflicting nutrition advice circulating online and in popular media, it's hard to know what to believe. Nutrition science is complex and evolving, but there are evidence-based principles that can guide healthy eating habits. This article separates fact from fiction and provides scientifically-grounded guidelines for nutrition.</p>
       
@@ -714,6 +735,7 @@ export class MemStorage implements IStorage {
     const id = this.currentDoctorId++;
     const doctor: Doctor = { ...insertDoctor, id };
     this.doctors.set(id, doctor);
+    console.log(`Doctor created with ID ${id}, specialization: ${doctor.specialization}, userId: ${doctor.userId}`);
     return doctor;
   }
 
