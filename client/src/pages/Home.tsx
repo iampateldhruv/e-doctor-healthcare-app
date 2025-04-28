@@ -1,12 +1,21 @@
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { Users, Pill, PenSquare, ArrowRight, BriefcaseMedical, Search, ShieldCheck, Stethoscope } from 'lucide-react';
+import {
+  Users,
+  Pill,
+  PenSquare,
+  ArrowRight,
+  BriefcaseMedical,
+  Search,
+  ShieldCheck,
+  Stethoscope,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Home = () => {
   // Fetch user to determine if logged in
   const { data: user } = useQuery({
-    queryKey: ['/api/users/current'],
+    queryKey: ["/api/users/current"],
   });
 
   return (
@@ -20,23 +29,29 @@ const Home = () => {
                 Your Health, Our Priority
               </h1>
               <p className="text-xl text-blue-100 mb-8">
-                Connect with top healthcare professionals, manage prescriptions, and access health resources all in one place.
+                Connect with top healthcare professionals, manage prescriptions,
+                and access health resources all in one place.
               </p>
               <div className="flex flex-wrap gap-4">
-                <Button size="lg" className="bg-white text-blue-700 hover:bg-blue-50">
+                <Button
+                  size="lg"
+                  className="bg-white text-blue-700 hover:bg-blue-50"
+                >
                   <Link href="/doctors">Find a Doctor</Link>
                 </Button>
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-blue-600 font-bold">
-                  <Link href={user ? "/dashboard" : "/login"}>
-                    {user ? "My Dashboard" : "Sign In"}
-                  </Link>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-white text-blue-700 hover:bg-blue-600 font-bold"
+                >
+                  <Link href="/symptom-checker">Health Check</Link>
                 </Button>
               </div>
             </div>
             <div className="hidden md:block">
-              <img 
-                src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80" 
-                alt="Healthcare professionals" 
+              <img
+                src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80"
+                alt="Healthcare professionals"
                 className="rounded-lg shadow-xl"
               />
             </div>
@@ -48,26 +63,29 @@ const Home = () => {
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Services</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Our Services
+            </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Comprehensive healthcare solutions designed to meet your needs with convenience and care.
+              Comprehensive healthcare solutions designed to meet your needs
+              with convenience and care.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <ServiceCard 
+            <ServiceCard
               icon={<Users className="text-primary w-12 h-12 mb-4" />}
               title="Find Specialists"
               description="Connect with top healthcare professionals across various specializations."
               link="/doctors"
             />
-            <ServiceCard 
+            <ServiceCard
               icon={<Pill className="text-primary w-12 h-12 mb-4" />}
               title="Online Pharmacy"
               description="Order prescriptions and medications with convenient home delivery."
               link="/pharmacy"
             />
-            <ServiceCard 
+            <ServiceCard
               icon={<PenSquare className="text-primary w-12 h-12 mb-4" />}
               title="Health Community"
               description="Access expert health articles and join discussions on health topics."
@@ -81,32 +99,35 @@ const Home = () => {
       <section className="py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">How It Works</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              How It Works
+            </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Simple steps to access quality healthcare from the comfort of your home.
+              Simple steps to access quality healthcare from the comfort of your
+              home.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <StepCard 
+            <StepCard
               number="1"
               icon={<Search className="text-primary w-8 h-8 mb-2" />}
               title="Search"
               description="Find doctors by specialty, location, or availability"
             />
-            <StepCard 
+            <StepCard
               number="2"
               icon={<BriefcaseMedical className="text-primary w-8 h-8 mb-2" />}
               title="Book"
               description="Schedule an appointment at your convenience"
             />
-            <StepCard 
+            <StepCard
               number="3"
               icon={<Stethoscope className="text-primary w-8 h-8 mb-2" />}
               title="Consult"
               description="Meet with your doctor online or in-person"
             />
-            <StepCard 
+            <StepCard
               number="4"
               icon={<ShieldCheck className="text-primary w-8 h-8 mb-2" />}
               title="Follow-up"
@@ -125,11 +146,15 @@ const Home = () => {
                 Ready to take control of your health?
               </h3>
               <p className="text-lg text-gray-600">
-                Join thousands of patients who have already transformed their healthcare experience with E-Doctor.
+                Join thousands of patients who have already transformed their
+                healthcare experience with E-Doctor.
               </p>
             </div>
             <div>
-              <Button size="lg" className="bg-primary hover:bg-blue-700 text-white">
+              <Button
+                size="lg"
+                className="bg-primary hover:bg-blue-700 text-white"
+              >
                 <Link href="/doctors">Get Started Today</Link>
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
